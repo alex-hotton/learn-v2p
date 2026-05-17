@@ -112,3 +112,18 @@ runs, the backend appears, the tests pass, the app works.
 | Frontend | Vite + React + TS + Tailwind + shadcn | Identical to level-1 / level-2 — familiar |
 | Backend (you build) | Hono on Node + better-sqlite3 | Same as level-2's reference — no new infra |
 | Pipeline runtime | Claude Code (`.claude/` primitives) | The thing you're learning to engineer |
+
+## Where to find the Claude Code primitive docs
+
+You'll be writing slash commands, hooks, and subagents — here's where
+the official docs cover each:
+
+- **Claude Code documentation index**: <https://docs.claude.com/en/docs/claude-code>
+- Look up these topics specifically: **slash commands** (where to put
+  your `/v2p` file and its frontmatter), **subagents** (definition
+  format, how to invoke from a parent agent), **hooks** (the
+  `.claude/settings.json` shape and event names like `PreToolUse`,
+  `Stop`), **skills** (folder structure and `SKILL.md` frontmatter).
+
+If a primitive isn't behaving the way you expect, the docs are the
+first stop — not the second.
