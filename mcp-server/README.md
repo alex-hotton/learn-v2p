@@ -1,12 +1,16 @@
 # Exercise — Build a Todo MCP Server
 
-This folder is where **you** build a Model Context Protocol server that
-plugs into Claude Desktop and gives it the ability to manage the todos in
-the local Todo app.
+This folder is **empty on purpose**. You're going to build a Model Context
+Protocol server here from scratch that plugs into Claude Desktop and gives
+it the ability to manage the todos in the local Todo app.
 
 You won't write the code by hand. You'll use **Claude Code** to build it,
-step by step. The whole point of this level is to learn how to equip Claude
-with tools — and what better way than having Claude build those tools.
+step by step. The whole point of this level is to learn how to equip
+Claude with tools — and what better way than having Claude build them.
+
+You decide the stack inside this folder (the recommendation: **TypeScript
+with the official MCP SDK** — `@modelcontextprotocol/sdk`). You init the
+project, install the deps, write the code, configure the build.
 
 ---
 
@@ -22,14 +26,17 @@ with tools — and what better way than having Claude build those tools.
    You should be able to open <http://localhost:5173> and see the UI, and
    `curl http://localhost:3001/api/todos` should return JSON.
 
-2. You have Claude Desktop installed: <https://claude.ai/download>
+2. Install Claude Desktop: <https://claude.ai/download>
 
-3. Install this folder's deps:
+3. Open Claude Code **in this folder**:
 
    ```bash
    cd mcp-server
-   npm install
+   claude --dangerously-skip-permissions
    ```
+
+   Everything you do, you do through Claude Code. This is the level where
+   you stop typing code and start driving the agent.
 
 ---
 
@@ -59,48 +66,27 @@ separation.
 | `PATCH` | `/api/todos/:id` | `{ "title"?: "...", "done"?: true }` |
 | `DELETE` | `/api/todos/:id` | — |
 
-### How to do it
+### Suggested prompt to Claude Code
 
-Open Claude Code **in this directory**:
+> Read README.md. We're at step 1. I have nothing in this folder yet.
+> Init a TypeScript project that builds an MCP server using
+> `@modelcontextprotocol/sdk`. Expose tools that wrap the Todo HTTP API
+> documented in the README. Then walk me through connecting it to Claude
+> Desktop so I can test it.
 
-```bash
-cd mcp-server
-claude --dangerously-skip-permissions
-```
+### Connecting to Claude Desktop
 
-Then prompt it something like:
-
-> Read README.md. Build step 1. Use `server.tool(...)` from the MCP
-> TypeScript SDK. The Todo API is documented in the README — call it with
-> `fetch`. Once you've added a tool, restart Claude Desktop so it picks up
-> the change, and have me test it.
-
-### How to connect to Claude Desktop
-
-Add this to your Claude Desktop config file:
+Once your server runs, add it to your Claude Desktop config file:
 
 - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 - **Linux**: `~/.config/Claude/claude_desktop_config.json`
 
-```json
-{
-  "mcpServers": {
-    "todo": {
-      "command": "npx",
-      "args": [
-        "tsx",
-        "/absolute/path/to/learn-v2p/mcp-server/src/index.ts"
-      ]
-    }
-  }
-}
-```
+The exact `command` and `args` depend on how you built it (compiled JS,
+`tsx`, `node --import tsx`, etc.) — Claude Code can generate the right
+config block for you once it knows your setup.
 
-Replace `/absolute/path/to/learn-v2p` with the real path on your machine
-(`pwd` from this folder, then strip the `mcp-server` suffix).
-
-**Restart Claude Desktop after every change to the server code.** It only
+**Restart Claude Desktop after every change to the server.** It only
 re-reads the config and re-spawns the server on startup.
 
 ### Validating step 1
@@ -113,8 +99,8 @@ Then:
 
 > Add "ship the MCP server" to my todos.
 
-If Claude can do both, step 1 is done. Now break the build, fix it, and
-make sure you can iterate.
+If Claude can do both end-to-end (through your server, hitting the local
+API, mutating the SQLite DB), step 1 is done.
 
 ---
 
@@ -133,16 +119,12 @@ Some directions to think in (don't follow blindly, decide what works):
   on the fly
 - Show counts, group done vs not done, make it look intentional
 
-### How to do it
+### Suggested prompt to Claude Code
 
-Same flow — back to Claude Code in this folder:
-
-> Now build step 2 from the README. Add a `server.resource(...)` that
-> returns HTML at `todo://list`. Make it look good — proper styling, clear
-> hierarchy, not a bare `<ul>`.
-
-Restart Claude Desktop, then in a chat reference the resource explicitly
-(Claude Desktop has a "Add from MCP" affordance for resources).
+> Step 2 from the README. Add an MCP resource at `todo://list` that
+> returns styled HTML showing the todos. Inline CSS. Make it look like a
+> real little dashboard. Restart hint when I need to reload Claude
+> Desktop.
 
 ### Validating step 2
 
@@ -155,7 +137,7 @@ bullet list.
 ## You're done when
 
 - Step 1 tools work end-to-end (list / add / toggle / delete from Claude
-  Desktop)
+  Desktop, going through your server → local API → SQLite)
 - Step 2 resource renders an actual nice-looking HTML view of the todos
 - You can explain to someone else what an MCP tool is vs an MCP resource
   and why this server has both
@@ -166,10 +148,9 @@ bullet list.
 
 - MCP TypeScript SDK: <https://github.com/modelcontextprotocol/typescript-sdk>
 - MCP spec: <https://modelcontextprotocol.io/>
-- The starter file you'll edit: [`src/index.ts`](src/index.ts)
 
 ## Stuck?
 
-Ask Claude Code — that's the point of this level. Show it the error, show
-it the README, ask it what's wrong. The exercise isn't to suffer alone,
-it's to learn how to drive an AI agent to build real things.
+Ask Claude Code — that's the whole point of this level. Show it the
+error, show it the README, ask it what's wrong. The exercise isn't to
+suffer alone, it's to learn how to drive an AI agent to build real things.

@@ -13,12 +13,13 @@ by having the agent itself build those capabilities.
 src/              React + Tailwind + shadcn frontend (don't touch)
 server/           Hono + better-sqlite3 backend (don't touch)
 mcp-server/       ← your exercise lives here
-  README.md       the spec, read this
-  src/index.ts    empty stub for you to fill in
+  README.md       the spec — everything else in this folder, you build
 ```
 
-The todo app (`src/` + `server/`) is a working reference target. The MCP
-server (`mcp-server/`) is what you're going to build.
+The todo app (`src/` + `server/`) is a working reference target. The
+`mcp-server/` folder is **empty on purpose** — you init the project, pick
+the stack inside it, install the deps, write the code. The README is the
+only file there because it's the spec.
 
 ## Quick start
 
