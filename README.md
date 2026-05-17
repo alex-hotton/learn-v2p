@@ -10,7 +10,7 @@ Each level lives on its own branch. Pick one, follow its README.
 
 | Level | Branch | What you learn | Time |
 |-------|--------|----------------|------|
-| 1 | [`level-1`](../../tree/level-1) | **Vibecoder** — Ship a real app fast. PRD → Supabase MCP → React + Supabase + Tailwind. | 1–3h |
+| 1 | [`level-1`](../../tree/level-1) | **Vibecoder** — Ship a real app fast. PRD → Supabase MCP → Vite + React + TS + Tailwind + shadcn + Supabase. | 1–3h |
 | 2 | [`level-2`](../../tree/level-2) | **Equipped Vibecoder** — Build an MCP server that gives Claude Desktop custom tools + an HTML resource against a local todo app. | 3–5h |
 | 3 | [`level-3`](../../tree/level-3) | **Agent Engineer** — Engineer your own vibe-to-prod pipeline (slash commands, subagents, hooks) and use it to build a backend from a PRD. | ½ to 1 day |
 
@@ -36,6 +36,12 @@ Common to all levels:
 - **Claude Code** CLI installed and authenticated
 - A terminal you're comfortable with
 
+> Heads-up: every level starts Claude Code with
+> `claude --dangerously-skip-permissions`. This flag tells Claude to
+> auto-approve every tool call without prompting — fine inside these
+> sandboxed exercises, but **don't make it a habit on real codebases**
+> until you understand what you're approving.
+
 Level-specific:
 
 | Level | Extra prerequisites |
@@ -53,3 +59,7 @@ cd level-1
 ```
 
 Replace `level-1` with the level you want.
+
+When you finish a level, follow the **Next level** link at the bottom
+of its README — you'll clone the next branch into a separate folder
+and start fresh.
