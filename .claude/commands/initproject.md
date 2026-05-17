@@ -6,27 +6,22 @@ Follow these phases interactively. **Resume detection first** — skip ahead if 
 
 ---
 
-## PHASE 0 — Resume detection (run first, every time)
+## PHASE 0 — State check (silent, every time)
 
-Check what already exists:
+Read the filesystem to figure out where to pick up. Do these checks
+silently with Read/Glob/Bash — don't narrate.
 
-1. `package.json` → project scaffolded?
-2. `.env` → Supabase keys set?
-3. `src/lib/supabase.ts` → Supabase client created?
-4. Try a Supabase MCP tool (e.g. `list_tables`) → MCP connected?
-
-Routing:
-- Nothing exists → **Phase 1**
-- PRD discussed but no `package.json` → **Phase 3**
-- `package.json` exists, no `.env` → **Phase 2** (Supabase MCP)
-- `.env` + MCP working but no tables for the PRD → **Phase 4**
-- Everything in place → ask the user what they want to build next
-
-Do these checks silently with Read/Glob/Bash. Don't narrate.
+| State on disk | Where to resume |
+|---------------|-----------------|
+| No `package.json`, no `.env` | **Phase 1** (PRD) |
+| `package.json` exists, Supabase MCP not connected | **Phase 2** (MCP setup) — user likely came back after restart |
+| MCP connected, no `.env` | **Phase 2.5** (collect keys, write `.env`, create client) |
+| `.env` + `src/lib/supabase.ts` exist, no feature code beyond the shell | **Phase 4** (build) — re-ask for the PRD since it's not on disk |
+| Feature code exists | Don't restart anything. Ask the user what to do next. |
 
 ---
 
-## PHASE 1 — PRD check
+## PHASE 1 — Get the PRD
 
 Ask the user (use `AskUserQuestion`):
 
@@ -52,7 +47,15 @@ When you have the PRD, come back here and run /initproject again.
 
 ### If YES
 
-Continue to Phase 2.
+Ask them to paste it (or give a path):
+
+> **Drop your PRD here — paste the content, or give me a path like `./PRD.md`.**
+
+Read it. Hold the key points in mind for Phase 4 — features to build,
+data model, user flows. Don't write the PRD to disk, don't lecture the
+user about it.
+
+Then continue to Phase 2.
 
 ---
 
@@ -107,11 +110,8 @@ If multiple Supabase projects exist, ask which one to use.
 
 ## PHASE 3 — Scaffold the project
 
-Get the PRD before doing anything:
-
-> **Drop your PRD here (paste content, or give me a path to the file).**
-
-Read it. Hold its key points in mind for Phase 4 — features to build, data model, user flows. Don't write it to disk, don't lecture the user about it.
+The PRD is already in mind (collected in Phase 1). Now lay down the
+shell so Phase 4 has something to build on.
 
 ### Scaffold the stack
 
@@ -389,7 +389,11 @@ Run `npm run dev` in the background and confirm the placeholder page loads. If i
 
 ## PHASE 4 — Build the app from the PRD
 
-You have the PRD. You have a clean React + Supabase + Tailwind shell. Now build it.
+If you arrived here via Phase 0 (resuming a previous session), re-ask
+the user to paste the PRD — it's not on disk. Otherwise it's already
+in mind from Phase 1.
+
+You have a clean React + Supabase + Tailwind shell. Now build the app.
 
 **Rules:**
 - Use the Supabase MCP for **all** database work. Create tables via `apply_migration` (so the SQL is versioned). Enable RLS with explicit policies.
