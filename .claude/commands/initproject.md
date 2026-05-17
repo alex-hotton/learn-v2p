@@ -1,0 +1,295 @@
+# /initproject — Level 1 Vibecoder Starter
+
+You're helping the user go from idea to running app **fast**. Stack is fixed: **Vite + React + TypeScript + Tailwind + Supabase**. No i18n, no SEO conventions, no over-engineering. Just ship.
+
+Follow these phases interactively. **Resume detection first** — skip ahead if work is already done.
+
+---
+
+## PHASE 0 — Resume detection (run first, every time)
+
+Check what already exists:
+
+1. `package.json` → project scaffolded?
+2. `.env` → Supabase keys set?
+3. `src/lib/supabase.ts` → Supabase client created?
+4. Try a Supabase MCP tool (e.g. `list_tables`) → MCP connected?
+
+Routing:
+- Nothing exists → **Phase 1**
+- PRD discussed but no `package.json` → **Phase 3**
+- `package.json` exists, no `.env` → **Phase 2** (Supabase MCP)
+- `.env` + MCP working but no tables for the PRD → **Phase 4**
+- Everything in place → ask the user what they want to build next
+
+Do these checks silently with Read/Glob/Bash. Don't narrate.
+
+---
+
+## PHASE 1 — PRD check
+
+Ask the user (use `AskUserQuestion`):
+
+> **Do you have a PRD ready for your project?**
+> - Yes, I have one
+> - No, I need to write it
+
+### If NO
+
+Tell them:
+
+```
+No problem. Go to https://claude.ai and use this prompt:
+
+  "Help me write a PRD for the following app idea: <your idea here>.
+   Keep it tight: who it's for, what it does, the core features (max 5),
+   and the data model. No fluff."
+
+When you have the PRD, come back here and run /initproject again.
+```
+
+**STOP.** Do not continue. Wait for the user to come back with a PRD.
+
+### If YES
+
+Continue to Phase 2.
+
+---
+
+## PHASE 2 — Supabase MCP setup
+
+Ask:
+
+> **Do you already have a Supabase project created?**
+> - Yes
+> - No
+
+### If NO
+
+```
+Go to https://supabase.com and:
+  1. Sign in / create an account
+  2. Click "New Project"
+  3. Pick a name and a database password
+  4. Wait ~2 min for it to be ready
+
+Come back when it's done.
+```
+
+Wait for confirmation, then continue.
+
+### Once the project exists
+
+If the Supabase MCP is **not** yet connected, tell the user:
+
+```
+Now connect the Supabase MCP to Claude Code:
+
+  1. Exit Claude Code:    /exit
+  2. In your terminal:    claude mcp add --scope project --transport http supabase "https://mcp.supabase.com/mcp"
+  3. Restart:             claude --dangerously-skip-permissions
+  4. Inside Claude Code:  /mcp
+  5. Authenticate Supabase in the browser when prompted
+  6. Then run:            /initproject
+
+I'll pick up automatically at Phase 3.
+```
+
+**STOP.** Wait for the restart.
+
+### When MCP is available
+
+Verify it works by calling a Supabase MCP tool (e.g. `list_projects` or `list_tables`). If it errors, tell the user to re-run `/mcp` and authenticate.
+
+If multiple Supabase projects exist, ask which one to use.
+
+---
+
+## PHASE 3 — Scaffold the project
+
+Get the PRD before doing anything:
+
+> **Drop your PRD here (paste content, or give me a path to the file).**
+
+Read it. Hold its key points in mind for Phase 4 — features to build, data model, user flows. Don't write it to disk, don't lecture the user about it.
+
+### Scaffold the stack
+
+The current directory contains `.claude/` and `.git` so `npm create vite` won't work. Build it by hand.
+
+Create `package.json`:
+
+```json
+{
+  "name": "<project-name-from-dir>",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  }
+}
+```
+
+Create `index.html`:
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><project-name></title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+```
+
+Create `vite.config.ts`:
+
+```ts
+import path from "path"
+import react from "@vitejs/plugin-react"
+import { defineConfig } from "vite"
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: { "@": path.resolve(__dirname, "./src") },
+  },
+})
+```
+
+Create `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "include": ["src", "vite.config.ts"]
+}
+```
+
+Create `src/main.tsx`:
+
+```tsx
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App'
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode><App /></StrictMode>
+)
+```
+
+Create `src/App.tsx` (temporary placeholder — replaced in Phase 4):
+
+```tsx
+export default function App() {
+  return <div className="p-8">Setting up...</div>
+}
+```
+
+Create `src/vite-env.d.ts`:
+
+```ts
+/// <reference types="vite/client" />
+```
+
+### Install deps
+
+```bash
+npm install react react-dom @supabase/supabase-js
+npm install -D vite @vitejs/plugin-react typescript @types/react @types/react-dom @types/node tailwindcss@3 postcss autoprefixer
+npx tailwindcss init -p
+```
+
+### Tailwind
+
+Overwrite `tailwind.config.js`:
+
+```js
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: { extend: {} },
+  plugins: [],
+}
+```
+
+Create `src/index.css`:
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+### Supabase client + env
+
+Ask the user for **Supabase URL** and **anon key** (Settings → API).
+
+Write `.env`:
+
+```
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_ANON_KEY=...
+```
+
+Create `src/lib/supabase.ts`:
+
+```ts
+import { createClient } from '@supabase/supabase-js'
+
+export const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+)
+```
+
+### Sanity check
+
+Run `npm run dev` in the background and confirm the placeholder page loads. If it doesn't, debug before moving on.
+
+---
+
+## PHASE 4 — Build the app from the PRD
+
+You have the PRD. You have a clean React + Supabase + Tailwind shell. Now build it.
+
+**Rules:**
+- Use the Supabase MCP for **all** database work. Create tables via `apply_migration` (so the SQL is versioned). Enable RLS with explicit policies.
+- Keep components close to where they're used. Don't pre-architect folders you don't need yet.
+- No i18n, no SEO meta dance, no shadcn unless the user asks for it. Plain Tailwind is fine.
+- Iterate: build the simplest version of the core feature, run it, then add the next.
+- When you make a non-trivial choice (e.g. data model shape, auth provider), say so in one line.
+
+When the core feature works end-to-end, tell the user what's running and ask what to build next.
+
+---
+
+## Notes
+
+- Always **execute** commands — don't just print them for the user to run.
+- Stop and wait at the explicit STOP points (PRD missing, MCP setup, restart).
+- If something fails, diagnose and fix. Don't paper over it.
+- Skip every "best practice" instinct unless the user asks. This is Level 1 — speed over polish.
