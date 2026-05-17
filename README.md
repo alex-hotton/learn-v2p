@@ -9,8 +9,8 @@ Each level lives on its own branch so you can `git checkout` the one you're work
 | Level | Branch | What you learn |
 |-------|--------|----------------|
 | 1 | [`level-1`](../../tree/level-1) | **Vibecoder** — Ship a working app fast with Claude Code. PRD → Supabase MCP → React + Supabase + Tailwind. No fluff. |
-| 2 | [`level-2`](../../tree/level-2) | **Equipped Vibecoder** — _Coming soon_ |
-| 3 | [`level-3`](../../tree/level-3) | **Agent Engineer** — _Coming soon_ |
+| 2 | [`level-2`](../../tree/level-2) | **Equipped Vibecoder** — Build an MCP server that plugs into Claude Desktop and gives it tools + an HTML resource against a local todo app. |
+| 3 | [`level-3`](../../tree/level-3) | **Agent Engineer** — Engineer your own vibe-to-prod pipeline (slash commands, subagents, hooks) and use it to build a backend from a spec. |
 
 ## Getting started
 
