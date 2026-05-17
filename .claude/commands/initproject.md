@@ -218,21 +218,51 @@ Create `src/vite-env.d.ts`:
 ### Install deps
 
 ```bash
+# Core
 npm install react react-dom @supabase/supabase-js
-npm install -D vite @vitejs/plugin-react typescript @types/react @types/react-dom @types/node tailwindcss@3 postcss autoprefixer
+npm install -D vite @vitejs/plugin-react typescript @types/react @types/react-dom @types/node
+
+# Tailwind
+npm install -D tailwindcss@3 postcss autoprefixer
 npx tailwindcss init -p
+
+# shadcn/ui foundations
+npm install class-variance-authority clsx tailwind-merge tailwindcss-animate lucide-react @radix-ui/react-slot
 ```
 
-### Tailwind
+### Tailwind config (shadcn-ready)
 
 Overwrite `tailwind.config.js`:
 
 ```js
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
-  theme: { extend: {} },
-  plugins: [],
+  theme: {
+    extend: {
+      colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: { DEFAULT: "hsl(var(--primary))", foreground: "hsl(var(--primary-foreground))" },
+        secondary: { DEFAULT: "hsl(var(--secondary))", foreground: "hsl(var(--secondary-foreground))" },
+        destructive: { DEFAULT: "hsl(var(--destructive))", foreground: "hsl(var(--destructive-foreground))" },
+        muted: { DEFAULT: "hsl(var(--muted))", foreground: "hsl(var(--muted-foreground))" },
+        accent: { DEFAULT: "hsl(var(--accent))", foreground: "hsl(var(--accent-foreground))" },
+        popover: { DEFAULT: "hsl(var(--popover))", foreground: "hsl(var(--popover-foreground))" },
+        card: { DEFAULT: "hsl(var(--card))", foreground: "hsl(var(--card-foreground))" },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+    },
+  },
+  plugins: [require("tailwindcss-animate")],
 }
 ```
 
@@ -242,7 +272,92 @@ Create `src/index.css`:
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground; }
+}
 ```
+
+Create `src/lib/utils.ts` (the `cn` helper shadcn components rely on):
+
+```ts
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+```
+
+Create `components.json` (so `npx shadcn@latest add <component>` works out of the box):
+
+```json
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.js",
+    "css": "src/index.css",
+    "baseColor": "slate",
+    "cssVariables": true
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils"
+  }
+}
+```
+
+shadcn components are added on demand later (e.g. `npx shadcn@latest add button`) — don't pre-install any.
 
 ### Supabase client + env
 
@@ -279,7 +394,7 @@ You have the PRD. You have a clean React + Supabase + Tailwind shell. Now build 
 **Rules:**
 - Use the Supabase MCP for **all** database work. Create tables via `apply_migration` (so the SQL is versioned). Enable RLS with explicit policies.
 - Keep components close to where they're used. Don't pre-architect folders you don't need yet.
-- No i18n, no SEO meta dance, no shadcn unless the user asks for it. Plain Tailwind is fine.
+- No i18n, no SEO meta dance. Add shadcn components on demand with `npx shadcn@latest add <name>` — don't pre-install a bunch.
 - Iterate: build the simplest version of the core feature, run it, then add the next.
 - When you make a non-trivial choice (e.g. data model shape, auth provider), say so in one line.
 
