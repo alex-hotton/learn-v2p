@@ -106,10 +106,14 @@ API, mutating the SQLite DB), step 1 is done.
 
 ## Step 2 — A resource (HTML)
 
-Now add an MCP **resource** that returns the todo list as **rendered HTML**
-— something visual and styled, not plain text or JSON. The goal is that
-when Claude Desktop displays this resource, it looks like a real little
-dashboard, not a debug dump.
+Now add an MCP **resource** that returns the todo list as **styled HTML**
+— something visual and structured, not plain text or JSON.
+
+A heads-up on what to expect: Claude Desktop surfaces MCP resources as
+side-panel / attachment-style previews, not as a full embedded webpage.
+Aim for **clean, readable, well-styled HTML** that holds up in that
+context — not an interactive dashboard. Think "well-designed page of a
+document", not "single-page application".
 
 Some directions to think in (don't follow blindly, decide what works):
 
@@ -123,8 +127,9 @@ Some directions to think in (don't follow blindly, decide what works):
 
 > Step 2 from the README. Add an MCP resource at `todo://list` that
 > returns styled HTML showing the todos. Inline CSS. Make it look like a
-> real little dashboard. Restart hint when I need to reload Claude
-> Desktop.
+> well-designed document page (Claude Desktop renders resources as
+> side-panel previews, not a full webpage). Tell me when to restart
+> Claude Desktop.
 
 ### Validating step 2
 
