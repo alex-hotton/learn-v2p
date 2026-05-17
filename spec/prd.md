@@ -13,7 +13,8 @@ saves** — close the tab, everything's gone. They want the basics:
 
 The frontend is already wired to call a JSON API. The exact endpoints,
 methods, and JSON shapes the API must serve are visible in
-`src/lib/api.ts` — your pipeline reads that file to derive the contract.
+`src/lib/api.ts` — your skill's **Grill-Me** step should read that file
+to derive the real contract.
 
 ## Stack constraints
 
@@ -24,18 +25,20 @@ methods, and JSON shapes the API must serve are visible in
 - The API runs on `:3001`. The frontend already proxies `/api/*` there
   (see `vite.config.ts`).
 
-## What your pipeline must produce
+## What your skill must produce
 
-Not just the backend code — also the surrounding infra. None of this is
+Not just backend code — also the surrounding infra. None of this is
 pre-installed:
 
-- Install the backend deps (`hono`, `@hono/node-server`,
+- Install backend deps (`hono`, `@hono/node-server`,
   `better-sqlite3`, `@types/better-sqlite3`, `tsx`, `concurrently`)
 - Install a test runner (`vitest` recommended) and wire `npm test`
 - Add a `dev:server` script and update `npm run dev` so it starts the
   frontend **and** the API together (use `concurrently`)
-- Write the tests **before** the implementation (that's the TDD step)
+- Write the failing tests **before** the implementation (TDD step)
 - Write the actual server code
+- Update docs to reflect what shipped (Update Documentation step) —
+  CHANGELOG, API doc, README, whatever you choose
 
 ## Non-goals
 
@@ -48,4 +51,5 @@ pre-installed:
 - `npm run dev` starts the frontend **and** the API together
 - Open <http://localhost:5173>, add a todo, refresh — it's still there
 - The "Failed to list todos" error banner is gone, the list renders
-- The tests your pipeline wrote all pass on `npm test`
+- The tests your skill wrote all pass on `npm test`
+- The docs you updated match what actually shipped
