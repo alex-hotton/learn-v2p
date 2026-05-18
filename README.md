@@ -8,14 +8,43 @@ Each level lives on its own branch. Pick one, follow its README.
 
 ## The levels
 
-| Level | Branch | What you learn |
-|-------|--------|----------------|
-| 1 | [`level-1`](../../tree/level-1) | **Vibecoder** — Ship a real app fast. PRD → Supabase MCP → Vite + React + TS + Tailwind + shadcn + Supabase. |
-| 2.1 | [`level-2.1`](../../tree/level-2.1) | **Equipped Vibecoder (skills)** — Use existing Claude Code skills (`grill-with-docs`, `tdd`, `create-mcp-app`) to build an MCP server with tools + an inline-rendered MCP App against a local todo app. |
-| 2.2 | [`level-2.2`](../../tree/level-2.2) | **Equipped Vibecoder (subagents + hooks)** — Build an automatic CHANGELOG that writes itself after every commit: one subagent + two hooks (`PostToolUse` + `Stop`). |
-| 3 | [`level-3`](../../tree/level-3) | **Agent Engineer** — Build your own Claude Code skill that codifies a 3-step methodology (Grill-Me → TDD → Update Docs), then run it on a PRD to ship a backend. |
+The arc: **use** → **equip** → **engineer**. Each level lives on its
+own branch — clone the one you want.
 
-The arc: **use** → **equip** → **engineer**.
+### Level 1 — Vibecoder · branch [`level-1`](../../tree/level-1)
+
+**Goal: stop typing code, start driving Claude Code.** You walk away
+able to ship a working app from a PRD in an afternoon, not a week. The
+exercise: build a minimal CRM (5 user stories) using `/initproject` —
+a single slash command that takes you from PRD to running React +
+Supabase app, end-to-end.
+
+### Level 2.1 — Equipped Vibecoder · skills · branch [`level-2.1`](../../tree/level-2.1)
+
+**Goal: extend Claude with reusable skills, don't just consume the
+default ones.** You walk away knowing how to install and apply
+community skills to drive a real workflow. The exercise: install
+`grill-with-docs` + `tdd` (Matt Pocock) and `create-mcp-app`
+(Anthropic), then use them to build a local MCP server that gives
+Claude Desktop new powers over a todo app — including an inline UI in
+the chat.
+
+### Level 2.2 — Equipped Vibecoder · subagents + hooks · branch [`level-2.2`](../../tree/level-2.2)
+
+**Goal: automate Claude's lifecycle — turn manual workflows into
+enforced ones.** You walk away knowing the split between subagents
+(delegate reasoning) and hooks (deterministic gates / triggers). The
+exercise: build one subagent (a CHANGELOG writer) + two hooks
+(`PostToolUse` on `git commit` to fire it, `Stop` to refuse ending the
+session if any commit is missing its entry).
+
+### Level 3 — Agent Engineer · branch [`level-3`](../../tree/level-3)
+
+**Goal: package your own end-to-end agent workflow as something
+shippable.** You walk away able to design, build, and distribute a
+Claude Code workflow others can install and use. The exercise: build
+a skill that codifies a 3-step development methodology (Grill-Me →
+TDD → Update Docs), then run it on a PRD to ship a tested backend.
 
 ## Why the stack changes between levels
 
