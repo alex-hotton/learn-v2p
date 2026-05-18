@@ -13,7 +13,7 @@ saves** — close the tab, everything's gone. They want the basics:
 
 The frontend is already wired to call a JSON API. The exact endpoints,
 methods, and JSON shapes the API must serve are visible in
-`src/lib/api.ts` — your skill's **Grill-Me** step should read that file
+`src/lib/api.ts` — the Grill-step of your plugin's workflow should read that file
 to derive the real contract.
 
 ## Stack constraints
@@ -25,7 +25,7 @@ to derive the real contract.
 - The API runs on `:3001`. The frontend already proxies `/api/*` there
   (see `vite.config.ts`).
 
-## What your skill must produce
+## What the plugin's workflow must produce
 
 Not just backend code — also the surrounding infra. None of this is
 pre-installed:
@@ -51,5 +51,5 @@ pre-installed:
 - `npm run dev` starts the frontend **and** the API together
 - Open <http://localhost:5173>, add a todo, refresh — it's still there
 - The "Failed to list todos" error banner is gone, the list renders
-- The tests your skill wrote all pass on `npm test`
+- The tests your plugin wrote all pass on `npm test`
 - The docs you updated match what actually shipped
