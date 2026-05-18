@@ -1,161 +1,146 @@
-# Level 2.1 — Equipped Vibecoder (skills)
+# Level 2.2 — Equipped Vibecoder (subagents + hooks)
 
-Second rung of the ladder: you stop just **using** Claude — you start
-**equipping it** with capabilities it didn't have. This level uses
-**skills**. Level 2.2 will go further with **subagents + hooks**.
+Same idea as level 2.1 — you keep **equipping** Claude — but with two
+new primitives this time: **subagents** and **hooks**. Skills told
+Claude *how* to think about a task. Hooks let Claude Code automate
+side-effects around tool calls and lifecycle events. Subagents let it
+delegate focused work to an isolated Claude instance with its own
+context.
 
-In this level you'll:
-1. Run a working todo app locally
-2. Install two Claude Code skills (`grill-with-docs` + `tdd`)
-3. Grill → TDD → connect each MCP feature into Claude Desktop
-4. Watch Claude drive the todo app — and, in feature 2, render UI
-   inline in the chat
+In this level you'll build an **automatic CHANGELOG**: every commit
+gets a new entry written for you, and the session refuses to end if a
+commit slipped through without one.
 
-Progression note: in level-1 you used a slash command. Here you use
-**skills**. In **level-2.2** you'll add **subagents + hooks**. In
-**level-3** you'll build your own skill.
+Progression note: level-1 = a slash command, level-2.1 = existing
+skills, **here** = subagents + hooks, level-3 = build your own skill.
 
 ## Prerequisites
 
 - Node ≥ 18, git, two terminal tabs
 - Claude Code CLI installed and authenticated
-- [Claude Desktop](https://claude.ai/download) installed (this is where
-  your MCP server gets tested)
 
 ## Quick start
 
 ### 1. Run the todo app
 
 ```bash
-git clone -b level-2.1 https://github.com/alex-hotton/learn-v2p.git level-2.1
-cd level-2.1
+git clone -b level-2.2 https://github.com/alex-hotton/learn-v2p.git level-2.2
+cd level-2.2
 npm install
 npm run dev
 ```
 
-You should see:
+This brings up the same todo app you saw in 2.1 — frontend on
+:5173, API on :3001. It's just here to give you something to change
+and commit.
 
-- Frontend on <http://localhost:5173>
-- API on <http://localhost:3001>
-- SQLite DB at `./data/todos.db`, seeded with 3 todos
+### 2. Open Claude Code
 
-Open the browser, play with the app. Then check
-`curl http://localhost:3001/api/todos` to see the JSON shape the MCP
-server will work with. Leave this terminal running.
-
-### 2. Install the skills
-
-Install Matt Pocock's `grill-with-docs` and `tdd`. The repos explain
-the install path:
-
-- <https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs>
-- <https://github.com/mattpocock/skills/tree/main/skills/engineering/tdd>
-
-Project-level or user-level, your call.
-
-### 3. Verify in Claude Code
-
-In a **second terminal**, open Claude Code:
+In a second terminal, from the same `level-2.2/` directory:
 
 ```bash
 claude --dangerously-skip-permissions
 ```
 
-Type `/skills` — you should see **grill-with-docs** and **tdd**
-listed. If not, fix the install path before going further.
+You'll create everything else from here — no skills to install, no
+external repos to clone.
 
 ## What's in this branch
 
 ```
-src/              React + Tailwind + shadcn frontend (don't touch)
-server/           Hono + better-sqlite3 backend (don't touch)
-mcp-server/       ← your exercise lives here
-  README.md       the technical spec for the MCP server
+src/              Todo app frontend (don't touch unless you want a change to commit)
+server/           Todo app backend
+.claude/          ← doesn't exist yet — you'll create it
+  agents/         ←   one subagent: the changelog writer
+  settings.json   ←   two hooks: PostToolUse + Stop
+CHANGELOG.md      ← doesn't exist yet — your automation creates it
+README.md         this file
 ```
-
-The todo app (`src/` + `server/`) is a working reference target — your
-MCP server talks to it over HTTP. The `mcp-server/` folder is **empty
-on purpose**: you init the project there, install deps, write the
-code. Only the README is shipped because it's the spec.
 
 ## The exercise
 
-You'll build two MCP features. The technical spec for each (what to
-build, validation, Claude Desktop config) lives in
-[`mcp-server/README.md`](mcp-server/README.md) — **read it first.**
+Build **one subagent** and **two hooks** that together give the repo
+an automatic, enforced changelog.
 
-Both features follow the same 3-step loop:
+### The subagent — `changelog-writer`
 
-1. **Grill** — invoke `grill-with-docs` to interrogate the feature
-   against the MCP TypeScript SDK docs. Pin the shape, name the tools,
-   surface edge cases.
-2. **TDD** — invoke `tdd` to red-green-refactor your way to a working
-   implementation.
-3. **Connect & test** — wire it into Claude Desktop, validate
-   end-to-end, and let `grill-with-docs` capture the decisions that
-   crystallized into the docs.
+Lives in `.claude/agents/changelog-writer.md`. Given a commit (SHA or
+"the latest commit"), it:
 
-### Feature 1 — MCP tools (text)
+1. Runs `git show` to inspect what changed
+2. Drafts a structured CHANGELOG entry (date, one-line summary, the
+   change category — feat / fix / refactor / docs / chore)
+3. Appends it to `CHANGELOG.md`, creating the file if missing
 
-Run the 3-step loop on **Step 1** of `mcp-server/README.md`: tools that
-wrap the Todo HTTP API (list / add / toggle / delete).
+Tools it needs: enough to read code and run git. Nothing destructive
+beyond appending to the changelog file.
 
-### Feature 2 — MCP App (inline HTML)
+### Hook 1 — `PostToolUse` (the trigger)
 
-Run the same 3-step loop on **Step 2**: a styled view that Claude
-renders **inline in the chat**, autonomously, when the user asks to
-see their todos. Different from feature 1 — this is full UI rendered
-in-chat, not just text replies.
+Fires after `Bash` tool calls that match `git commit`. On success,
+invokes the `changelog-writer` subagent on the commit that just
+landed.
 
-**You need two extra things before starting feature 2**, otherwise it
-won't work:
+This is the *automation* — without it, the subagent would have to be
+invoked by hand every time.
 
-1. **Install the official Anthropic `create-mcp-app` skill** —
-   <https://github.com/modelcontextprotocol/ext-apps/tree/main/plugins/mcp-apps/skills/create-mcp-app>
-2. **Use the `ext-apps` repo as your reference** —
-   <https://github.com/modelcontextprotocol/ext-apps>
-   (look at `examples/basic-server-vanillajs/`; the skill walks you
-   through everything else)
+### Hook 2 — `Stop` (the gate)
+
+Fires when Claude tries to end the session. Checks that every commit
+made in the current session has a corresponding `CHANGELOG.md` entry.
+If any is missing, the hook **blocks the stop** (exit code 2) and
+tells Claude to fix it — Claude then invokes the subagent on the
+missing commits and tries to stop again.
+
+This is the *enforcement* — without it, Claude could end the session
+mid-way and leave the changelog incomplete.
+
+### Validate
+
+1. Make any change to the todo app (rename a button, add a console
+   log — whatever). Commit it through Claude.
+2. Confirm `CHANGELOG.md` got a new entry **without you asking for
+   it**.
+3. Make a second commit, then ask Claude to end the session before
+   the changelog catches up. Confirm the Stop hook fires and Claude
+   has to add the missing entry.
 
 ## You're done when
 
-- From a Claude Desktop chat, you can list / add / toggle / delete
-  todos and see the changes reflected in the frontend
-- Asking Claude to "show me my todos" triggers a tool call **on its
-  own** and the HTML view renders **inline in the chat** with the
-  current todo list (no manual attach, no side-panel)
-- Both features went through the Grill → TDD → Connect & test loop and
-  the doc updates from `grill-with-docs` reflect the decisions you made
-- You can articulate why MCP **Apps** exist on top of plain tools and
-  resources, and when you'd reach for one
+- A commit through Claude automatically produces a `CHANGELOG.md`
+  entry (no manual prompt needed)
+- Attempting to end the session with an un-changelogged commit blocks
+  and forces Claude to fix it
+- You can articulate the split: **hook = deterministic trigger /
+  gate**, **subagent = isolated reasoning** — and why this exercise
+  needs both
 
-## Stack reference
+## References
 
-| Layer | Tech | Why |
-|-------|------|-----|
-| Frontend | Vite + React + TS + Tailwind + shadcn | Same as level-1 — familiar |
-| Backend | Hono on Node | Tiny, modern, TS-first |
-| DB | SQLite via `better-sqlite3` | Zero install, file-based |
-| MCP SDK | `@modelcontextprotocol/sdk` (TypeScript) | Official |
-| MCP Apps | Anthropic `ext-apps` extension | Feature 2 — inline UI in chat |
-| Skills | `grill-with-docs`, `tdd`, `create-mcp-app` (feature 2) | Battle-tested patterns |
+- Claude Code **hooks** guide:
+  <https://claudefa.st/blog/tools/hooks/hooks-guide>
+- Claude Code **subagents** blog post:
+  <https://claude.com/blog/subagents-in-claude-code>
+- Claude Code docs index (where `.claude/agents/` format and
+  `.claude/settings.json` schema are defined):
+  <https://docs.claude.com/en/docs/claude-code>
 
 ## Troubleshooting
 
-- **`npm install` fails on `better-sqlite3`**: Node ≥ 18 with build
-  tools available. On macOS: `xcode-select --install`.
-- **Port 5173 or 3001 already in use**: kill whatever's holding them
-  (`lsof -i :3001`) or change (`PORT=3002 npm run dev:server`).
-- **Wiped the DB**: `rm -rf data/` and restart — it re-seeds.
-- **Skills don't show in `/skills`**: confirm the path is
-  `.claude/skills/<name>/SKILL.md` (not nested further). The folder
-  name should match the skill name.
-- **MCP App view is blank in the chat**: your client bundle isn't
-  self-contained. Compare against `basic-server-vanillajs/` in the
-  `ext-apps` repo — the `create-mcp-app` skill knows the fix.
+- **The hook doesn't fire on commit**: check the matcher in
+  `.claude/settings.json` — `PostToolUse` matches on tool name + an
+  optional regex over the tool input.
+- **The subagent never gets called**: a hook can only *invoke* a
+  subagent if Claude is involved (most hooks just run shell). The
+  cleanest pattern is for the hook to inject a system message into
+  the next turn telling Claude to invoke the subagent.
+- **`Stop` hook loops forever**: your check returns "missing" even
+  after Claude added the entry. Re-read the JSON your hook is
+  outputting, and confirm the matching logic against
+  `CHANGELOG.md` is right.
 
 ## Next level
 
-[`level-2.2`](../../tree/level-2.2) — **Equipped Vibecoder, part 2.**
-Same Claude Code, two new primitives: **subagents** and **hooks**.
-You'll automate a workflow that, today, you'd do by hand.
+[`level-3`](../../tree/level-3) — **Agent Engineer.** Stop *using*
+primitives others wrote (or that you wired up here), and build your
+own skill from scratch.
