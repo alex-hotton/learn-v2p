@@ -73,6 +73,6 @@ starter, not a sample app.
 
 ## Next level
 
-[`level-2`](../../tree/level-2) — **Equipped Vibecoder.** Now you stop
-just using Claude Code, and start giving it new capabilities you built
-yourself.
+[`level-2.1`](../../tree/level-2.1) — **Equipped Vibecoder.** Now you
+stop just using Claude Code, and start giving it new capabilities you
+built yourself.
