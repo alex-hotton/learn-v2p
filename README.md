@@ -1,19 +1,35 @@
 # Level 1 — Vibecoder
 
-The first rung of the ladder: use Claude Code to ship a real, deployable
-app from a PRD, fast. **You** stay the product person — Claude does the
+The first rung of the ladder: use Claude Code to ship a working app from
+a PRD, fast. **You** stay the product person — Claude does the
 mechanics.
 
 Stack is fixed: **Vite + React + TypeScript + Tailwind + shadcn +
 Supabase**. No i18n, no SEO conventions, no 12-folder architecture. Just
 ship.
 
+## What you'll build — the 5 user stories
+
+A minimal CRM. This is the spec. Nothing more, nothing less.
+
+1. **As a sales rep**, I want to create, edit and delete contacts, **so
+   I can** keep my prospect list up to date.
+2. **As a sales rep**, I want to create deals linked to a contact, **so
+   I can** track my pipeline.
+3. **As a sales rep**, I want to move deals through stages (New,
+   Qualified, Won, Lost), **so I can** see where each deal stands.
+4. **As a sales rep**, I want to add notes to a contact or deal, **so
+   I don't** lose context between calls.
+5. **As a sales manager**, I want to see a dashboard with total deals
+   by stage, **so I can** track team performance at a glance.
+
+When `/initproject` asks for your PRD, paste these stories.
+
 ## Prerequisites
 
 - Node ≥ 18
 - Claude Code CLI installed and authenticated
 - A free [Supabase](https://supabase.com) account
-- `gh` CLI (optional, only if you want to push to GitHub at the end)
 
 ## Quick start
 
@@ -31,11 +47,11 @@ Then in Claude Code:
 
 The slash command walks you through, end-to-end:
 
-1. Checking your PRD is ready (if not, it sends you to claude.ai to write one)
+1. Checking your PRD is ready (paste the 5 user stories above)
 2. Connecting the Supabase MCP to Claude Code
 3. Scaffolding the React + Tailwind + shadcn shell
 4. Wiring the Supabase client and validating the connection
-5. Building the actual app from your PRD
+5. Building the CRM from your PRD
 
 ## What's in this branch
 
@@ -50,18 +66,10 @@ starter, not a sample app.
 
 ## You're done when
 
-- Your app is running locally (`npm run dev`)
-- The core feature of your PRD works end-to-end against Supabase
-- (Optional) The project is pushed to your own GitHub repo
-
-## Make it your own repo
-
-The clone above keeps this repo's git history. If you want a fresh repo
-of your own:
-
-```bash
-rm -rf .git && git init && git add -A && git commit -m "Initial commit"
-```
+- `npm run dev` runs and the app is up on <http://localhost:5173>
+- All 5 user stories work end-to-end against your Supabase project
+- A sales manager can open the dashboard and actually see counts per
+  stage
 
 ## Next level
 
