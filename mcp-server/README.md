@@ -48,27 +48,50 @@ step 1 is done.
 
 ---
 
-## Step 2 — MCP Resource (HTML)
+## Step 2 — MCP App (autonomous inline HTML)
 
-Expose an MCP **resource** that returns the todo list as styled HTML.
+Build an **MCP App**: a tool that returns `structuredContent` paired
+with a `ui://` resource that serves a self-contained HTML bundle.
+Claude renders this **inline in the chat**, not in a side-panel, and
+calls it autonomously when the user asks something like "show me my
+todos".
 
-Heads-up on rendering: Claude Desktop surfaces MCP resources as
-side-panel / attachment-style previews, not as a full embedded webpage.
-Aim for **clean, readable, well-styled HTML** that holds up in that
-context — think "well-designed document page", not "interactive
-dashboard".
+You don't have to invent the shape — there's an official Anthropic
+template. Clone it for reference:
 
-Suggested shape (decide what works for you):
+```
+git clone --depth 1 https://github.com/modelcontextprotocol/ext-apps.git
+```
 
-- Resource URI: `todo://list` returning `text/html`
-- Inline CSS (no external stylesheet)
-- Same `GET /api/todos` endpoint for data, build HTML on the fly
-- Counts, group done vs not done, make it look intentional
+Look at `examples/basic-server-vanillajs/`. That's the canonical layout.
+
+### Pieces you'll write (mirrors the reference example)
+
+| Piece | File | What it does |
+|-------|------|--------------|
+| App tool | `src/index.ts` | `server.registerTool("show_todo_list_html", {...})` with `_meta.ui.resourceUri = "ui://todo/list.html"`. Handler hits `GET /api/todos` and returns `structuredContent: { todos }` — that's the data the iframe consumes. |
+| App resource | `src/index.ts` | `registerAppResource(server, "todo_app", "ui://todo/list.html", {...}, async () => readFile("dist-client/mcp-app.html"))` |
+| HTML shell | `client/mcp-app.html` | Empty shell: `<div id="root">` + `<script src="src/mcp-app.ts">` + inline CSS |
+| Client logic | `client/src/mcp-app.ts` | `new App({...})`, register `ontoolresult`, `app.connect()`, render todos into the DOM |
+| Build | `vite.config.ts` | `vite-plugin-singlefile` to inline every JS/CSS asset into one HTML file |
 
 ### Validation
 
-Surface `todo://list` in a Claude Desktop chat. You should see a
-clean, styled HTML rendering — not a JSON blob, not a bullet list.
+Restart Claude Desktop, then in a fresh chat:
+
+> Show me my todos
+
+Claude should:
+
+1. Call `show_todo_list_html` **autonomously** (no attach step, no
+   `/resources` browse)
+2. Inline-render the styled HTML view directly under the tool call,
+   with counts, the two sections (done / not done), and the current
+   todo list
+
+If the iframe is empty under the tool call, your client bundle isn't
+self-contained — check that `vite-plugin-singlefile` is wired correctly
+and compare against the reference example.
 
 ---
 
