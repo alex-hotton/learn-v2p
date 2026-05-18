@@ -42,9 +42,11 @@ session if any commit is missing its entry).
 
 **Goal: package your own end-to-end agent workflow as something
 shippable.** You walk away able to design, build, and distribute a
-Claude Code workflow others can install and use. The exercise: build
-a skill that codifies a 3-step development methodology (Grill-Me →
-TDD → Update Docs), then run it on a PRD to ship a tested backend.
+Claude Code **plugin** — a bundle that ties skills, subagents, and
+hooks into one installable unit. The exercise: build your own V2P
+plugin (manifest + at least 2 components from {skill, subagent, hook,
+MCP server}), load it via `--plugin-dir`, then use it to ship the todo
+backend from a PRD.
 
 ## Why the stack changes between levels
 
