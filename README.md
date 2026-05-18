@@ -78,38 +78,32 @@ MCP server talks to it over HTTP. The `mcp-server/` folder is **empty
 on purpose**: you init the project there, install deps, write the
 code. Only the README is shipped because it's the spec.
 
-## The exercise (3 phases)
+## The exercise
 
-### Phase 1 — Grill the idea
+You'll build two MCP features. The technical spec for each (what to
+build, validation, Claude Desktop config) lives in
+[`mcp-server/README.md`](mcp-server/README.md) — **read it first.**
 
-Invoke the `grill-with-docs` skill on the MCP server idea. Have it
-question what you're about to build:
+Both features follow the same 3-step loop:
 
-- What does the MCP TypeScript SDK actually expose? (tools vs resources,
-  transports, schema)
-- What's the right shape for each tool name + input?
-- What edge cases for "add/toggle/delete a todo"?
-- How does Claude Desktop render an MCP resource — fully embedded HTML,
-  or a side-panel preview?
+1. **Grill** — invoke `grill-with-docs` to interrogate the feature
+   against the MCP TypeScript SDK docs. Pin the shape, name the tools,
+   surface edge cases.
+2. **TDD** — invoke `tdd` to red-green-refactor your way to a working
+   implementation.
+3. **Connect & test** — wire it into Claude Desktop, validate
+   end-to-end, and let `grill-with-docs` capture the decisions that
+   crystallized into the docs.
 
-Lock the answers before writing any code.
+### Feature 1 — MCP tools (text)
 
-### Phase 2 — TDD the tools
+Run the 3-step loop on **Step 1** of `mcp-server/README.md`: tools that
+wrap the Todo HTTP API (list / add / toggle / delete).
 
-Invoke the `tdd` skill to implement **Step 1** of the technical spec
-(see `mcp-server/README.md`): MCP tools that wrap
-`http://localhost:3001/api/todos` for list / add / toggle / delete.
+### Feature 2 — MCP resource (HTML)
 
-Failing tests first, then implementation, then validate in Claude
-Desktop.
-
-### Phase 3 — TDD the HTML resource
-
-Same `tdd` skill, now for **Step 2** of the spec: an MCP resource that
-returns the todo list as styled HTML.
-
-The full technical spec, the Claude Desktop config block, and the exact
-validation steps all live in [`mcp-server/README.md`](mcp-server/README.md).
+Run the same 3-step loop on **Step 2**: a styled HTML resource at
+`todo://list`.
 
 ## You're done when
 
@@ -117,10 +111,10 @@ validation steps all live in [`mcp-server/README.md`](mcp-server/README.md).
   todos and see the changes reflected in the frontend
 - The HTML resource displays a clean, styled view of the current todo
   list when surfaced in Claude Desktop
+- Both features went through the Grill → TDD → Connect & test loop and
+  the doc updates from `grill-with-docs` reflect the decisions you made
 - You can articulate the difference between an MCP **tool** and an MCP
   **resource**, and why this server has both
-- You can articulate why you used `grill-with-docs` and `tdd` in that
-  order
 
 ## Stack reference
 
