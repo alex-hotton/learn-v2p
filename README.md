@@ -44,31 +44,25 @@ server will work with. Leave this terminal running.
 
 ### 2. Install the two skills
 
-In a **second terminal**, from the same `level-2/` directory:
+Install Matt Pocock's `grill-with-docs` and `tdd` skills. The repo
+explains the install path:
 
-```bash
-mkdir -p .claude/skills
-git clone --depth 1 https://github.com/mattpocock/skills.git /tmp/mp-skills
-cp -r /tmp/mp-skills/skills/engineering/grill-with-docs .claude/skills/
-cp -r /tmp/mp-skills/skills/engineering/tdd .claude/skills/
-rm -rf /tmp/mp-skills
-```
+- <https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs>
+- <https://github.com/mattpocock/skills/tree/main/skills/engineering/tdd>
 
-Skill sources:
-- [`grill-with-docs`](https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs)
-- [`tdd`](https://github.com/mattpocock/skills/tree/main/skills/engineering/tdd)
+Project-level or user-level, your call. The next step verifies they're
+loaded.
 
 ### 3. Verify in Claude Code
 
-In that second terminal, still in `level-2/`:
+In a **second terminal**, open Claude Code:
 
 ```bash
 claude --dangerously-skip-permissions
 ```
 
-Then type `/skills` — you should see **grill-with-docs** and **tdd**
-listed. If not, the install path is wrong; check that the SKILL.md
-files landed at `.claude/skills/<name>/SKILL.md`.
+Type `/skills` — you should see **grill-with-docs** and **tdd**
+listed. If not, fix the install path before going further.
 
 ## What's in this branch
 
