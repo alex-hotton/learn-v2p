@@ -48,32 +48,21 @@ step 1 is done.
 
 ---
 
-## Step 2 — MCP App (autonomous inline HTML)
+## Step 2 — MCP App (inline HTML)
 
-Build an **MCP App**: a tool that returns `structuredContent` paired
-with a `ui://` resource that serves a self-contained HTML bundle.
-Claude renders this **inline in the chat**, not in a side-panel, and
-calls it autonomously when the user asks something like "show me my
-todos".
+Build an **MCP App**: Claude calls a tool, gets data back, and the
+host renders a styled HTML view **inline in the chat** — not in a
+side-panel. Claude should trigger it on its own when the user asks
+something like "show me my todos".
 
-You don't have to invent the shape — there's an official Anthropic
-template. Clone it for reference:
+You won't make this work without two things:
 
-```
-git clone --depth 1 https://github.com/modelcontextprotocol/ext-apps.git
-```
-
-Look at `examples/basic-server-vanillajs/`. That's the canonical layout.
-
-### Pieces you'll write (mirrors the reference example)
-
-| Piece | File | What it does |
-|-------|------|--------------|
-| App tool | `src/index.ts` | `server.registerTool("show_todo_list_html", {...})` with `_meta.ui.resourceUri = "ui://todo/list.html"`. Handler hits `GET /api/todos` and returns `structuredContent: { todos }` — that's the data the iframe consumes. |
-| App resource | `src/index.ts` | `registerAppResource(server, "todo_app", "ui://todo/list.html", {...}, async () => readFile("dist-client/mcp-app.html"))` |
-| HTML shell | `client/mcp-app.html` | Empty shell: `<div id="root">` + `<script src="src/mcp-app.ts">` + inline CSS |
-| Client logic | `client/src/mcp-app.ts` | `new App({...})`, register `ontoolresult`, `app.connect()`, render todos into the DOM |
-| Build | `vite.config.ts` | `vite-plugin-singlefile` to inline every JS/CSS asset into one HTML file |
+1. **The `create-mcp-app` skill** (official Anthropic):
+   <https://github.com/modelcontextprotocol/ext-apps/tree/main/plugins/mcp-apps/skills/create-mcp-app>
+2. **The `ext-apps` repo** as your reference:
+   <https://github.com/modelcontextprotocol/ext-apps> — clone it and
+   read `examples/basic-server-vanillajs/`. That's the canonical
+   layout. The skill walks you through the wiring on top of it.
 
 ### Validation
 
@@ -83,15 +72,12 @@ Restart Claude Desktop, then in a fresh chat:
 
 Claude should:
 
-1. Call `show_todo_list_html` **autonomously** (no attach step, no
-   `/resources` browse)
-2. Inline-render the styled HTML view directly under the tool call,
-   with counts, the two sections (done / not done), and the current
-   todo list
+1. Call your MCP App tool **autonomously** (no attach, no manual browse)
+2. Render the styled view **inline under the tool call**, with the
+   current todos
 
-If the iframe is empty under the tool call, your client bundle isn't
-self-contained — check that `vite-plugin-singlefile` is wired correctly
-and compare against the reference example.
+If the inline view is blank, your bundle isn't self-contained — go
+back to the reference example.
 
 ---
 

@@ -5,14 +5,10 @@ Second rung of the ladder: you stop just **using** Claude — you start
 
 In this level you'll:
 1. Run a working todo app locally
-2. Install three Claude Code skills:
-   - `grill-with-docs` and `tdd` (Matt Pocock) — used in both features
-   - `create-mcp-app` (official Anthropic) — only for feature 2
-3. **Grill** each MCP feature with `grill-with-docs`
-4. **TDD-implement** it with `tdd` (plain MCP for feature 1; an
-   autonomous **MCP App** for feature 2)
-5. Connect to Claude Desktop and watch Claude drive the local app —
-   and, in feature 2, render UI inline in the chat
+2. Install two Claude Code skills (`grill-with-docs` + `tdd`)
+3. Grill → TDD → connect each MCP feature into Claude Desktop
+4. Watch Claude drive the todo app — and, in feature 2, render UI
+   inline in the chat
 
 Progression note: in level-1 you used a slash command. Here you use
 **skills**. In level-3 you'll **build your own**.
@@ -47,17 +43,13 @@ server will work with. Leave this terminal running.
 
 ### 2. Install the skills
 
-Install Matt Pocock's `grill-with-docs` and `tdd` now (you'll use both
-for feature 1). The third one, `create-mcp-app`, is only needed for
-feature 2 — install it when you get there:
+Install Matt Pocock's `grill-with-docs` and `tdd`. The repos explain
+the install path:
 
 - <https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs>
 - <https://github.com/mattpocock/skills/tree/main/skills/engineering/tdd>
-- <https://github.com/modelcontextprotocol/ext-apps/tree/main/plugins/mcp-apps/skills/create-mcp-app>
-  (official Anthropic skill for MCP Apps — install before starting feature 2)
 
-Project-level or user-level, your call. The next step verifies they're
-loaded.
+Project-level or user-level, your call.
 
 ### 3. Verify in Claude Code
 
@@ -69,7 +61,6 @@ claude --dangerously-skip-permissions
 
 Type `/skills` — you should see **grill-with-docs** and **tdd**
 listed. If not, fix the install path before going further.
-(`create-mcp-app` can wait until feature 2.)
 
 ## What's in this branch
 
@@ -107,25 +98,22 @@ Both features follow the same 3-step loop:
 Run the 3-step loop on **Step 1** of `mcp-server/README.md`: tools that
 wrap the Todo HTTP API (list / add / toggle / delete).
 
-### Feature 2 — MCP App (autonomous HTML)
+### Feature 2 — MCP App (inline HTML)
 
-Run the same 3-step loop on **Step 2**: a styled HTML view that Claude
+Run the same 3-step loop on **Step 2**: a styled view that Claude
 renders **inline in the chat**, autonomously, when the user asks to
-"see" their todos.
+see their todos. Different from feature 1 — this is full UI rendered
+in-chat, not just text replies.
 
-This is built with the **MCP Apps** extension — a tool that returns
-`structuredContent` plus a `ui://` resource serving a Vite single-file
-bundle. It's different from a plain MCP resource (which surfaces as a
-side-panel preview); an MCP App is full UI rendered in-chat.
+**You need two extra things before starting feature 2**, otherwise it
+won't work:
 
-Before starting:
-
-1. Install `create-mcp-app` (see Quick start section 2)
-2. Read the official examples in the
-   [`ext-apps`](https://github.com/modelcontextprotocol/ext-apps) repo
-   — specifically `examples/basic-server-vanillajs/`, which is the
-   canonical template (`server.ts`, `mcp-app.html`, `src/mcp-app.ts`,
-   `vite.config.ts`)
+1. **Install the official Anthropic `create-mcp-app` skill** —
+   <https://github.com/modelcontextprotocol/ext-apps/tree/main/plugins/mcp-apps/skills/create-mcp-app>
+2. **Use the `ext-apps` repo as your reference** —
+   <https://github.com/modelcontextprotocol/ext-apps>
+   (look at `examples/basic-server-vanillajs/`; the skill walks you
+   through everything else)
 
 ## You're done when
 
@@ -137,7 +125,7 @@ Before starting:
 - Both features went through the Grill → TDD → Connect & test loop and
   the doc updates from `grill-with-docs` reflect the decisions you made
 - You can articulate why MCP **Apps** exist on top of plain tools and
-  resources, and what `_meta.ui.resourceUri` does for the host
+  resources, and when you'd reach for one
 
 ## Stack reference
 
@@ -147,8 +135,8 @@ Before starting:
 | Backend | Hono on Node | Tiny, modern, TS-first |
 | DB | SQLite via `better-sqlite3` | Zero install, file-based |
 | MCP SDK | `@modelcontextprotocol/sdk` (TypeScript) | Official |
-| MCP Apps | `@modelcontextprotocol/ext-apps` + `vite-plugin-singlefile` | Feature 2 — inline UI in chat |
-| Skills | `grill-with-docs`, `tdd`, `create-mcp-app` | Battle-tested patterns |
+| MCP Apps | Anthropic `ext-apps` extension | Feature 2 — inline UI in chat |
+| Skills | `grill-with-docs`, `tdd`, `create-mcp-app` (feature 2) | Battle-tested patterns |
 
 ## Troubleshooting
 
@@ -160,10 +148,9 @@ Before starting:
 - **Skills don't show in `/skills`**: confirm the path is
   `.claude/skills/<name>/SKILL.md` (not nested further). The folder
   name should match the skill name.
-- **MCP App iframe is empty under the tool call**: your client bundle
-  isn't self-contained. The `vite-plugin-singlefile` must inline every
-  JS/CSS asset into the HTML. Compare against `basic-server-vanillajs/`
-  in the `ext-apps` repo.
+- **MCP App view is blank in the chat**: your client bundle isn't
+  self-contained. Compare against `basic-server-vanillajs/` in the
+  `ext-apps` repo — the `create-mcp-app` skill knows the fix.
 
 ## Next level
 
