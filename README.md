@@ -1,7 +1,8 @@
-# Level 2 — Equipped Vibecoder
+# Level 2.1 — Equipped Vibecoder (skills)
 
 Second rung of the ladder: you stop just **using** Claude — you start
-**equipping it** with capabilities it didn't have.
+**equipping it** with capabilities it didn't have. This level uses
+**skills**. Level 2.2 will go further with **subagents + hooks**.
 
 In this level you'll:
 1. Run a working todo app locally
@@ -11,7 +12,8 @@ In this level you'll:
    inline in the chat
 
 Progression note: in level-1 you used a slash command. Here you use
-**skills**. In level-3 you'll **build your own**.
+**skills**. In **level-2.2** you'll add **subagents + hooks**. In
+**level-3** you'll build your own skill.
 
 ## Prerequisites
 
@@ -25,8 +27,8 @@ Progression note: in level-1 you used a slash command. Here you use
 ### 1. Run the todo app
 
 ```bash
-git clone -b level-2 https://github.com/alex-hotton/learn-v2p.git level-2
-cd level-2
+git clone -b level-2.1 https://github.com/alex-hotton/learn-v2p.git level-2.1
+cd level-2.1
 npm install
 npm run dev
 ```
@@ -154,5 +156,6 @@ won't work:
 
 ## Next level
 
-[`level-3`](../../tree/level-3) — **Agent Engineer.** Now you stop
-*using* skills others wrote, and start **writing your own**.
+[`level-2.2`](../../tree/level-2.2) — **Equipped Vibecoder, part 2.**
+Same Claude Code, two new primitives: **subagents** and **hooks**.
+You'll automate a workflow that, today, you'd do by hand.
